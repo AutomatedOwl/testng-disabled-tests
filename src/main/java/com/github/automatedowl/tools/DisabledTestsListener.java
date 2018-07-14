@@ -33,7 +33,7 @@ public class DisabledTestsListener implements IInvokedMethodListener {
     private final String DISABLED_TESTS_MESSAGE =
             "You have $X disabled TestNG tests in your project.";
     private final String DISABLED_TEST_DETAILS =
-            "$X is a TestNG test which currently disabled.";
+            "$X" + "is a TestNG test which currently disabled.";
     private final String SEPARATOR_STRING =
             "---------------------------------------------";
 

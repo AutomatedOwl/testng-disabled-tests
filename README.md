@@ -39,11 +39,11 @@ INFO: You have 2 disabled TestNG tests in your project.
 Jul 14, 2018 11:57:28 AM com.github.automatedowl.tools.DisabledTestsListener afterInvocation
 INFO: ---------------------------------------------
 Jul 14, 2018 11:57:28 AM com.github.automatedowl.tools.DisabledTestsListener lambda$afterInvocation$0
-INFO:  firstDisabledTest  is a TestNG test which currently disabled.
+INFO:  firstDisabledTest is a TestNG test which currently disabled.
 Jul 14, 2018 11:57:28 AM com.github.automatedowl.tools.DisabledTestsListener lambda$afterInvocation$0
 INFO: ---------------------------------------------
 Jul 14, 2018 11:57:28 AM com.github.automatedowl.tools.DisabledTestsListener lambda$afterInvocation$0
-INFO:  secondDisabledTest  is a TestNG test which currently disabled.
+INFO:  secondDisabledTest is a TestNG test which currently disabled.
 Jul 14, 2018 11:57:28 AM com.github.automatedowl.tools.DisabledTestsListener lambda$afterInvocation$0
 INFO: ---------------------------------------------
 
