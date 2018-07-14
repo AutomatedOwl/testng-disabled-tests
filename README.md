@@ -66,7 +66,6 @@ You would not have to write any code in the test itself. The listener would pars
 
 ### Maven dependencies
 
-TestNG:
 ```
     <dependency>
         <groupId>com.github.automatedowl</groupId>
