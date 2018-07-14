@@ -52,7 +52,7 @@ INFO: ---------------------------------------------
 
 DisabledTestsCollector annotation has just one String value, 'testsPath'.
 You would have to locate your tests classes and define it as 'testPath' value,
-in order to direct the collector to the java tests classes files. 
+in order to direct the collector to the java test classes files. 
 The trivial path in java project would be '/src/test/java', but you may adjust it for your needs. 
 You would not have to write any code in the test itself. The listener would parse you tests path and would the job of collecting your disabled tests.  
 
