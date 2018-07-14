@@ -3,14 +3,14 @@ package com.github.automatedowl.tools;
 import org.testng.Assert;
 import org.testng.annotations.*;
 
-/** Class that contains TestNG unit tests for Chromedriver JS errors collector. */
+/** Class that contains TestNG unit tests for collecting disabled tests. */
 @Listeners(DisabledTestsListener.class)
 public class InventoryTests {
 
     @Test
     @DisabledTestsCollector(testsPath = "/src/test/java")
     void getDisabledTest() {
-
+        // This test would collect all disabled tests in TestNG project.
     }
 
     @Test
@@ -19,7 +19,12 @@ public class InventoryTests {
     }
 
     @Test(enabled = false)
-    void disabledTest() {
+    void firstDisabledTest() {
+        Assert.assertTrue(true);
+    }
+
+    @Test(enabled = false)
+    void secondDisabledTest() {
         Assert.assertTrue(true);
     }
 }

@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
@@ -29,8 +30,16 @@ public class DisabledTestsListener implements IInvokedMethodListener {
             Pattern.quote("void")
                     + "(.*)",
             Pattern.DOTALL);
+    private final String DISABLED_TESTS_MESSAGE =
+            "You have $X disabled TestNG tests in your project.";
+    private final String DISABLED_TEST_DETAILS =
+            "$X is a TestNG test which currently disabled.";
+    private final String SEPARATOR_STRING =
+            "---------------------------------------------";
+
     @Override
-    public void beforeInvocation(IInvokedMethod iInvokedMethod, ITestResult iTestResult) {
+    public void beforeInvocation(
+            IInvokedMethod iInvokedMethod, ITestResult iTestResult) {
         // Do nothing.
     }
 
@@ -44,55 +53,62 @@ public class DisabledTestsListener implements IInvokedMethodListener {
         // Check if test method had invoked.
         if (iInvokedMethod.getTestMethod().isTest() && isTestAnnotated(iInvokedMethod)) {
 
+            // Extract java code as string from java files.
+            javaTestsCode = extractJavaTestsCode(javaTestsCode, iInvokedMethod);
+
+            // Extract disabled tests from from java tests code.
+            ArrayList<String> extractedDisabledTests = extractDisabledTests(javaTestsCode.get());
+            if (!extractedDisabledTests.isEmpty()) {
+                logger.info(DISABLED_TESTS_MESSAGE
+                        .replace("$X", Integer.toString(extractedDisabledTests.size())));
+                logger.info(SEPARATOR_STRING);
+                extractedDisabledTests.forEach(test -> {
+                    logger.info(DISABLED_TEST_DETAILS.replace("$X", test));
+                    logger.info(SEPARATOR_STRING);
+                });
+            } else {
+                logger.info("No disabled TestNG tests have been found your project :)");
+            }
+        }
+    }
+
+    private AtomicReference<String> extractJavaTestsCode(
+            AtomicReference<String> javaTestsCode, IInvokedMethod iInvokedMethod) {
+
             // Search for files of java tests classes.
             try (Stream<Path> paths = Files.walk(Paths.get(
                     System.getProperty("user.dir") + getTestsPath(iInvokedMethod)))) {
                 paths.filter(Files::isRegularFile)
 
-                        // For each java test file, concat its string. 
+                        // For each java test file, concat its string.
                         .forEach(file -> {
                             String javaTestFileCode = readLinesFromFile(file.toString());
-                            javaTestsCode.set(String.join("\n", javaTestsCode.get(), javaTestFileCode));
+                            javaTestsCode.set(
+                                    String.join("\n", javaTestsCode.get(), javaTestFileCode));
                         });
             } catch (Exception exception) {
                 // Do nothing.
             }
-            
-            String extractedTests = extractTests(javaTestsCode.get());
-            logger.info(extractedTests);
-            String disabledTests = getDisabledTests(extractedTests);
-            if (disabledTests != null) {
-                logger.info(disabledTests);
-            }
-        }
-
-       // logger.info(javaTestsCode.get());
+        return javaTestsCode;
     }
 
-    private String getDisabledTests(String extractedTests) {
-        return null;
-    }
-
-    private String extractTests(String testsCode) {
-
+    private ArrayList<String> extractDisabledTests(String testsCode) {
         Matcher matcher = TESTS_REGEX_EXPRESSION.matcher(
                 testsCode);
-        String extractedTests = "";
+        ArrayList<String> extractedTests = new ArrayList<>();
 
-        // Index for regex matches.
-        int regexMatchIndex = 1;
+        // Search for test matches in java code.
         while (matcher.find()) {
-            //logger.info("Result index: " + regexMatchIndex);
-            //logger.info(matcher.group());
             if (matcher.group().contains("enabled = false") | matcher.group().contains("enabled=false")) {
                 Matcher disabledTestMatcher = DISABLED_TEST_REGEX_EXPRESSION.matcher(matcher.group());
                 disabledTestMatcher.find();
-                extractedTests = String.join("\n", extractedTests,
-                        disabledTestMatcher.group()
-                                .replace("void", "")
-                                .replace("{", ""));
+
+                // Add extracted test and remove all its strings but test name.
+                extractedTests.add(disabledTestMatcher.group()
+                        .replace("void", "")
+                        .replace("{", "")
+                        .replace("()",""));
             }
-            regexMatchIndex++;
         }
         return extractedTests;
     }
@@ -112,7 +128,8 @@ public class DisabledTestsListener implements IInvokedMethodListener {
 
     private String readLinesFromFile(String filePath) {
         StringBuilder contentBuilder = new StringBuilder();
-        try (Stream<String> stream = Files.lines(Paths.get(filePath), StandardCharsets.UTF_8)) {
+        try (Stream<String> stream = Files.lines(
+                Paths.get(filePath), StandardCharsets.UTF_8)) {
             stream.forEach(s -> contentBuilder.append(s).append("\n"));
         } catch (IOException e) {
             e.printStackTrace();

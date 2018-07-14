@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Suite">
-    <test name="Test" time-out="3600000" parallel="methods" thread-count="4">
+<suite name="TestNG Disabled Tests Suite">
+    <test name="Inventory Tests" parallel="methods" thread-count="1">
         <classes>
-            <class name="com.github.automatedowl.tools.InventoryTests"/>
+            <class name="com.github.automatedowl.tools.InventoryTests">
+                <methods>
+                    <include name="getDisabledTest" />
+                </methods>
+            </class>
         </classes>
     </test>
 </suite>
